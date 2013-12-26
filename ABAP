@@ -1,0 +1,451 @@
+5)
+collect itab 区分大小写字母。
+
+6) read table itab index n
+将第n条记录读到缓冲区中。
+
+7) CLEAR ITAB. 清理缓冲区。
+
+8) exec sql 与变量.
+     EXEC SQL.
+     SELECT f1,f2 into :a1,:a2 from table_name 
+     where 
+   endexec.
+
+9) 参数传递默认为传值
+  form sub_name using p1 p2 changing p3
+  加入value 为传递指针。
+  form sub_name using value(p1) p2 changing p3 
+
+10) 字符串从0开始数。
+     F1+3(5) 从第四位开始的5个字符。
+    字符串益处不提示错误，自动截断。
+
+11) 一些概念说明。
+data : begin of  line,
+            col1(10) type C,
+            col2     type I,
+       end of line,
+       itab like line occurs 10 with header line.
+*******
+line 为 work area.
+itab 显式声明为具有head line (相当于itab的缓冲行 每次可以直接 loop at itab )
+如果写成 itab like line occurs 10. 省略了 with header line 则没有 header line.
+如果声明itab 的时候指出了itab 的构成元素，不写  with header line 也一样具有
+   head line。
+例如
+begin of itab occurs 10,
+    col1(10) type C,
+    col2     type I,
+end of itab.
+
+
+12)
+   SY-SUBRC   系统执行传回值, 0 表示成功 
+   SY-UNAME  logon 帐号 
+   SY-DATUM  系统日期 
+   SY-UZEIT    系统时间 
+   SY-TCODE   目前的transaction code 
+   SY-UCOMM   屏幕，PAI触发的功能代码
+
+13) 
+定义内标数据类型   TYPES VECTOR TYPE I OCCURS 10.
+14) wa2有个字段是wa2 .
+DATA: ITAB2 like wa2 OCCURS 0 with header line.    
+delete itab2 where OK = 'Y' .
+
+14) sum 之后
+将对应的值写入 itab的缓冲区 或者 wa中
+INITIAL 初始状态。
+
+15) 定义字段串与内标的行相似。
+DATA F_LINE LIKE LINE OF F_ITAB . "其中F_ITAB为内表。
+FORM FILL TABLES F_ITAB LIKE ITAB[].
+F_ITAB 在子程序中自动具有内表头行。
+
+16) 得到字段串text的长度并存入 num 中。
+DESCRIBE FIELD text LENGTH num IN BYTE MODE.
+DESCRIBE FIELD <F1> LENGTH <F2> IN BYTE MODE.
+    
+17) 一下选取数据到内表中。
+select * from anla into table itab where WHERE BUKRS = 'K600' . 
+
+18) 动态Where条件。
+SY-DBCNT 表示数据库影响的行数。
+
+19) 获取itab的行数。
+describe table t_output lines g_count.
+
+
+20) 调用执行windows 程序。
+CALL FUNCTION 'WS_EXECUTE'
+     EXPORTING
+           program = 'C:\Program Files\Microsoft Office\OFFICE11\winword.exe'
+          commandline   = 'C:\TEMP\result.TXT'
+          inform        = ''
+     EXCEPTIONS
+          prog_not_found = 1.
+
+case sy-subrc.
+  when 0. write / 'OK'.
+  when 1. write / 'Program not dound.'.
+  when others . write / 'Other error.'.
+endcase.
+
+21)
+MESSAGE '请写入公司代码！' TYPE 'E'. "错误
+MESSAGE '请写入公司代码！' TYPE 'W'. "警告
+MESSAGE '请写入公司代码！' TYPE 'I'. "弹出讯息
+MESSAGE '请写入公司代码！' TYPE 'S'. "下表讯息
+
+22) 判断为空 NULL
+GP_WLKUN IS INITIAL
+
+22) read table key 
+*定义行数据结构。
+types : begin of stu_t ,
+         name(10) type c,
+         age type i,
+        end of stu_t.
+*定义itab 内表 行结构为 stu_t 关键字为name 且有自带工作区。
+data : itab type table of stu_t with header line with  key name.
+clear itab.    "清空缓冲区。
+read table itab with key  'wanghp1'.
+23) refresh itab 清空 itab.
+24) 有head line 的要使用[]进行赋值
+    x031l_tab2[] = x031l_Tab[] .
+
+25) 读取itab 最后一行。
+"方法：先获取 itab 的总行数 ,然后read.
+DESCRIBE TABLE itab LINES len.
+READ TABLE itab INDEX len.
+26) [] 标示内标体
+refresh 清空表体 不管有没有头行。
+对于有头行的 clear 仅仅清空头行。
+             clear itab[] 也清空表体
+对于没有头行的
+             clear 也清空表体。
+
+27) replace 用法。
+REPLACE '<TABNAME>' WITH TABNAME INTO S-LINE.
+28) 去掉多余空格Condense.
+"前导空格后道空格去掉，单词中间的空格多个压缩为1个.
+先要把s_tmp 定义为string.
+s_tmp = table_info-tabname.
+CONDENSE s_tmp.
+
+28) 在输入画面上显示提示。
+SELECTION-SCREEN COMMENT /1(70) comm1. "输出提示。
+29) select-options  VS ranges.
+select-options 一声明的时候就有个内表
+用户输入条件数据时就把条件append 进去。
+ranges 声明的时候就只声明一个内表，需要你手工append 进去。
+select-options 和 ranges的内表的结构是一样的。
+有 sign option low high 四项内容。
+sign I E 分别表示 inlcude exclude
+option EQ BT CP 分表表示相等 包含 字符包含
+有一项比较值时 写入 low 即可。
+
+30) range 的内表也可以在判断中使用
+if '100000050' in p_matnr.
+else.
+endif.
+
+31) alv 的名字要大写 改了avl 要激活。
+32) into  CORRESPONDING FIELDS OF TABLE ITAB1
+33) OBLIGATORY 标示必须输入。
+34) AT SELECTION-SCREEN ON VALUE-REQUEST FOR S_FNAME
+    Perform  ***
+   表示光标输入到字段s_Fname 时才运行相应的Form.
+AT SELECTION-SCREEN. 表示user 输入一个选项 之后作出反应。
+35) exit 跳出循环。 stop 跳出程序。
+leave program .
+36) 二分查找。binary search 需要排序 否则会出错！
+  sort itab1 by col1 col2.
+  read table itab1  BINARY SEARCH with key col1 = itab-col1 col2 = itab-col2 .
+  if sy-subrc eq 0.
+
+37) concatenate 连接若干个字符变量。
+concatenate 'a' 'b' into v_c [SEPARATED BY space].
+
+38) 事件
+START SELECTION : 输入结束后启动的区块, 如按下 <F8>
+END OF SELECTION : 在结束打印数据后启动,如可用来印出USER输入的条件
+
+AT SELECTION-SCREEN 将要离开选择屏幕时执行的事件，可以用来检查输入。
+
+
+39) EXCEL相关
+INCLUDE OLE2INCL.  " FOR OLE
+DATA: EXCEL TYPE OLE2_OBJECT,   "声明变量
+      BOOKS TYPE OLE2_OBJECT,
+      SHEET TYPE OLE2_OBJECT,
+      CELL  TYPE OLE2_OBJECT.
+
+  CREATE OBJECT EXCEL 'EXCEL.APPLICATION'.                     "创建EXCEL 应用程序
+  CALL METHOD OF EXCEL 'WORKBOOKS' = BOOKS.                    "EXCEL WORKBOOK.
+  CALL METHOD OF BOOKS 'OPEN'                                  "OPEN WORKBOOK
+    EXPORTING #1 = P_FNAME .  "'C:\CASH.XLS'.
+  CALL METHOD OF EXCEL 'WORKSHEETS' = SHEET EXPORTING #1 = 1.  "定位到sheet1
+  CALL METHOD OF SHEET 'ACTIVATE'.                             "激活sheet1
+  CALL METHOD OF EXCEL 'CELLS' = CELL EXPORTING #1 = 1 #2 = 1.  "定位到A1
+
+40) eq space. 跟  IS NULL 不同。
+
+41) 成本中心组的展开 
+    参见 costGroup.abap
+DATA: t_set_values TYPE TABLE OF rgsb4 with header line.
+  (SET_ID = '0101KDCACC01000000')
+
+  CALL FUNCTION 'G_SET_GET_ALL_VALUES'
+       EXPORTING
+            SETNR                 = SET_ID                "RDI_SETS_4.0
+       TABLES
+            SET_VALUES            = t_set_values
+       EXCEPTIONS
+            SET_NOT_FOUND         = 1
+            OTHERS                = 2.
+
+
+
+42) (fieldname) 
+fieldname 为字符串，其值为一个变量名字。
+(fieldname) 则表示该变量。
+
+43) 一下子初始化内表。
+PERFORM APPEND_ITEM USING:
+*   no.  par. no.  title
+    '1'  ''        'Food',
+    '2'  ''        'Drinks',
+    '12' '9'       'Jack Daniels',
+    '17' '11'      'Bosch',
+    '3'  ''        'Tools',
+    '4'  '1'       'Meat',
+    '16' '11'      'Metabo'.
+
+*the definition of FORM append_item
+FORM APPEND_ITEM USING VALUE(ID) VALUE(PARENT_ID) VALUE(TEXT).
+   ITEMS-ID = ID.
+   ITEMS-PARENT_ID = PARENT_ID.
+   ITEMS-TEXT = TEXT.
+   APPEND ITEMS.
+ENDFORM.
+
+**************************************************************
+
+45) left outer join knvp as d
+46) GET CURSOR FIELD field_name 
+    将光标处的字段名放入 field_name 中。
+
+47) 去掉前导0 ， 增加前导0
+SHIFT str LEFT DELETING LEADING '0'.  "删去str前导的0 同 CONVERSION_EXIT_ALPHA_OUTPUT
+unpack i to tmp.                      "增加前导0,i为整数 tmp 定义为一定长度的字串 同CONVERSION_EXIT_ALPHA_INPUT。
+48) 字符串
+CO  Contain Only ,str1 CO str2 表示 str1 是 str2的子集(区分大小写!把str1 str2 看成字符的集合)
+CA  Contain Anly ,str1 CA str2 表示 str1 中有字符在str2中区分大小写!)。
+CS  Contain String, str1 CS str2 表示 str2 字符串是str1的子串。
+CP  Contain Pattern, str1 CP str2 ,其中str2 是模式串 ，表示str1 匹配 str2.
+
+49) IDoc Intermediate Document
+
+50) 截止日期 ，修改成本中心的字段时会新增加一条记录，但是截止日期不同。
+AND DATBI > SY-DATUM
+51) WRITE DATE TO CHAR(12) DD/MM/YYYY. 格式化日期到字符。
+52) 保护全局数据不被更改 LOCAL.
+    在FORM 里申明的新数据与全局数据无关。
+53) STATIC .
+    在FORM 中 用static 申明的变量，第二次调用的初始值为钱一次条用时存储的值。
+54) 动态呼叫子程序。
+subrname = 'SUB1'.
+PERFORM (subrname) IN PROGRAM (progname) IF FOUND.
+55) 普通都是传递Reference.
+56) CHANGING person TYPE line.
+和  CHANGING value(person) TYPE line. 是一样的。
+PERFORM fill CHANGING itab.
+PERFORM out  USING    itab.
+FORM fill CHANGING f_itab LIKE itab. 
+ENDFORM.
+FORM out USING value(f_itab) LIKE itab.
+ENDFORM.
+57) MESSAGE 的方式。
+MESSAGE ID sy-msgid TYPE sy-msgty NUMBER sy-msgno
+MESSAGE e888(sabapdocu) with 'Error in  function module'.
+MESSAGE 'something error ' type 'E'.
+
+58) 在结构的变量之间移动。这些都方便循环，比如要算某月的余额等，
+    DO 4 TIMES VARYING string1 FROM text-word1 NEXT text-word2.
+
+59) sort 
+SORT itab DESCENDING BY land weight ASCENDING.
+
+60) hashed table 
+DATA: BEGIN OF LINE,
+        TEXT(6) TYPE C,
+        XTEXT(160) TYPE X,
+      END OF LINE.
+
+DATA ITAB LIKE HASHED TABLE OF LINE WITH UNIQUE KEY TEXT.
+INSERT LINE INTO TABLE ITAB.
+
+61) 声明 内表与table 一样，否则有Unicode的错误！
+TYPES ZTBL_ZFI52 TYPE STANDARD TABLE OF ZTBL_ZFI52 WITH DEFAULT KEY.
+DATA ITAB TYPE ZTBL_ZFI52 WITH HEADER LINE.        "参考数据内表
+
+62) 一次性全部Insert 
+INSERT ZTBL_ZFI52 FROM TABLE ITAB ACCEPTING DUPLICATE KEYS.
+
+63) 格式化字符串
+write a to str1 using edit mask '___,___,___,___,___.__'. "这种方法是有问题的！
+"他是从左边对其格式化，且符号没有考虑！
+65 while 语句
+While G_Cols < p_To.
+ENDWHILE.
+
+66 形式参数的itab 用[]表示表体 且自动有表头！
+PROGRAM SAPMZTST.
+TYPES: BEGIN OF LINE,
+         COL1 TYPE I,
+         COL2 TYPE I,
+       END OF LINE.
+DATA: ITAB TYPE LINE OCCURS 10 WITH HEADER LINE,
+      JTAB TYPE LINE OCCURS 10.
+
+PERFORM FILL TABLES ITAB.
+MOVE ITAB[] TO JTAB.
+PERFORM OUT  TABLES JTAB. 
+* TABLES 声明的参数可以 changing
+FORM FILL TABLES F_ITAB LIKE ITAB[].
+   DO 3 TIMES.
+      F_ITAB-COL1 = SY-INDEX.
+      F_ITAB-COL2 = SY-INDEX ** 2.
+      APPEND F_ITAB.
+   ENDDO.
+ENDFORM. 
+FORM OUT TABLES F_ITAB LIKE JTAB.
+   LOOP AT F_ITAB.
+      WRITE: / F_ITAB-COL1, F_ITAB-COL2.
+   ENDLOOP.
+ENDFORM.
+67) delete itab
+delete itab_xs where bukrs not in R_BUKRS.
+
+68) 扑捉系统错误 
+CATCH SYSTEM-EXCEPTIONS CONVERSION_ERRORS = 1.
+   int = var / 2.
+ENDCATCH.
+IF SY-SUBRC = 1.
+  write : / 'err in convert ',var,'to int!'.
+else.
+  write : / 'OK result is ',int.
+ENDIF.
+** 本例就是看var 成否转换成数字。
+69) 首先运行initialize 部分。
+r_kunnr is not initial
+
+70) sorted bable  and hashed table 
+
+TYPES: BEGIN OF line_type, f1, f2, END OF line_type.
+DATA: tab1 TYPE SORTED TABLE OF line_type WITH UNIQUE KEY f1 WITH HEADER LINE.
+tab1-f1 = 'Y'. Tab1-f2 = '1'. INSERT TABLE tab1.
+tab1-f1 = 'X'. Tab1-f2 = '1'. INSERT TABLE tab1.
+tab1-f1 = 'A'. Tab1-f2 = '1'. INSERT TABLE tab1.
+READ TABLE tab1 WITH TABLE KEY f1 = 'A'.
+LOOP AT tab1. WRITE:/ tab1-f1, tab1-f2. ENDLOOP.
+*-------------------------------------------------
+TYPES: BEGIN OF line_type, f1, f2, END OF line_type.
+DATA: tab1 TYPE HASHED TABLE OF line_type WITH UNIQUE KEY f1 WITH HEADER LINE.
+
+71) SAP sql 语句中有两个字段时，后一个要用表名。
+update ZTBL_ZSD31 set KZWI0 = ZTBL_ZSD31~NETWR where KZWI0 is null  .
+72) sy-dbcnt  影响的记录的行数。
+73) is not initial.
+it_vbeln-werks is not initial and it_vbeln-werks <> itab-werks
+74)SPLIT itab-HZSERNR AT '-' INTO L_SERNR L_KUNDE .
+75)  使用 assign 的指针时要注意先 clear 表头的缓冲。
+       clear disply .  "如果没有这一行 下面的老是承接上面的数据！！！
+       CONCATENATE 'DISPLY-MONTH' tmp_cc into fldname1 .
+       ASSIGN (fldname1) TO <F1>.
+       <F1> = it_tmp-amt .
+76) 动态 ALV 动态 内表 参见 zmm28_2.abap
+77) MOVE-CORRESPONDING ITAB1 TO ITAB2 .  "把 Itab1与Itab2 字段名相同的字段 复制过来。(仅仅header line) ] 
+78) 从某行开始读取内表。
+loop at itab from 2 to 4.
+    write : / itab-col1,itab-col2.
+endloop.
+
+clear itab.
+read table itab with key col1 = 'C' .
+write  : /  'The Row:',sy-tabix,itab-col1,itab-col2 .
+l_row = sy-tabix + 1 . clear itab.
+read table itab index l_row .
+write  : /  'The Row:',sy-tabix,itab-col1,itab-col2 .
+79)获取时间 
+   get run time field t1.
+   ....
+   get run time field t2.
+   time = t2 - t1 .
+
+80) select max( xx ) into l_var from yy where aa = 'notexistkey' .
+不存在这个记录 时 sy-subrc 返回的也是0 ！ l_var initial。
+
+81)
+call function 'POPUP_TO_CONFIRM_STEP'
+    exporting
+        TEXTLINE1 = '已有该周的数据 是否重算？'
+        TITEL = '已有数据'
+    importing
+        ANSWER = l_ans .
+
+选择 Yes 返回 J
+     NO       N
+    cancel    A
+
+82) if p_date is initial or p_date = 0 . RFC 传入的时候要注意 ！
+83) sort DESCENDING
+84) 使用逻辑数据库
+
+要在属性中设置逻辑数据库  DDF 应收账款客户主数据  
+                          902 
+85)  SAP 事务码
+SHD0 配置屏幕输入字段的 变式  参见 http://yucunchen.blog.163.com/blog/static/229547920106284131196/
+
+86)  负数的移动类型
+    SELECT BWART SHKZG
+    FROM T156
+    INTO CORRESPONDING FIELDS OF TABLE IT_T156_H
+    WHERE SHKZG = 'H'.
+
+87) 简单屏幕维护 示例 RFTSTCP0
+88）cfieldname 单位
+89) WA_ALV_FIELD-lzero        = 'X' .      "显示的时候 出现前导0.
+    WA_ALV_FIELD-reptext_ddic = '本位币3'. "显示名称 与那个Ｍ　Ｓ　Ｌ　有点区别
+
+90) http://help.sap.com/bp_bl604/BL_CN/html/index_ZH.htm   SAP  配置 help 文档
+91) report painter 预定义的出口
+    S001 会计年
+    S002 会计月 
+    U001 使用者?
+
+92）Modify ZUSRBF2 INDEX sy-tabix TRANSPORTING BNAME. "只修改 Bname这个字段
+
+93）report painter 
+    列的定义中，如果有变量，则变量会自动放入 selection中
+    使用行-展开 就可以插入最上的一层，然后把下面的各层也展开的。
+    菜单-编辑-变化 选择某个扩展，即可在出现的结果中呈现数的形式。
+
+94) Report Painter 出口变量 
+S001	年（根据CO会计年度） 
+S002	月（从本地系统代码）
+S003	月中日（从本地系统代码）
+S004	日历周（从本地系统代码）
+S005	年中日（从本地系统代码）
+S006	期间（根据CO会计年度） 
+S007	作业控制部门的CO上一期间的最后一日 
+S008	年（从本地系统日期）
+S009	系统日期
+S010	成本控制范围
+S011	活动控制部门实际基础评估
+S012	当前年度的当前期间（每CO会计年度） 
+
+
+95) PERFORM frm_currency IN PROGRAM zfir001 USING wa_result-date 'RMB' wa_result-s_price 'HKD' CHANGING wa_result-s_price.
